@@ -1,0 +1,1 @@
+c:\users\bartłomiej\documents\visual studio 2015\Projects\NetworkCallController\NetworkCallController\bin\Debug\NetworkCallController.exe.config
