@@ -11,6 +11,7 @@ namespace NetworkCallController
         public string UserName;
         public string destUsername;
         public int UserCallCapacity;
+        public int userDomain;
  
     }
 }

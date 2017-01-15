@@ -1,1 +1,8 @@
 c:\users\bartłomiej\documents\visual studio 2015\Projects\NetworkCallController\NetworkCallController\bin\Debug\NetworkCallController.exe.config
+C:\Users\Bartłomiej\documents\visual studio 2015\Projects\NetworkCallController\NetworkCallController\bin\Debug\NetworkCallController.exe
+C:\Users\Bartłomiej\documents\visual studio 2015\Projects\NetworkCallController\NetworkCallController\bin\Debug\NetworkCallController.pdb
+C:\Users\Bartłomiej\documents\visual studio 2015\Projects\NetworkCallController\NetworkCallController\bin\Debug\Newtonsoft.Json.dll
+C:\Users\Bartłomiej\documents\visual studio 2015\Projects\NetworkCallController\NetworkCallController\bin\Debug\Newtonsoft.Json.xml
+C:\Users\Bartłomiej\documents\visual studio 2015\Projects\NetworkCallController\NetworkCallController\obj\Debug\NetworkCallController.csprojResolveAssemblyReference.cache
+C:\Users\Bartłomiej\documents\visual studio 2015\Projects\NetworkCallController\NetworkCallController\obj\Debug\NetworkCallController.exe
+C:\Users\Bartłomiej\documents\visual studio 2015\Projects\NetworkCallController\NetworkCallController\obj\Debug\NetworkCallController.pdb

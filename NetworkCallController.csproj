@@ -54,8 +54,9 @@
     <Compile Include="Policy.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Message.cs" />
+    <Compile Include="SignalMessage.cs" />
     <Compile Include="SNP.cs" />
+    <Compile Include="SNPP.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

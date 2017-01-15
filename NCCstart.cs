@@ -12,24 +12,45 @@ namespace NetworkCallController
 {
     class NCCstart
     {
-        int listenerPort;
         int NCCid;
+        int neighbourNCCport;
+        int outPort;
+        string[] clientId;
+        int listenerPort;
+        string ipAddress;
+        
+
         UdpClient inputSocket;
         bool listenerOn;
-        NCC ncc;
-        int outPort; //z batcha
+        public NCC ncc;
         Socket outputSocket;
 
-        public NCCstart(int listenerPort, int NCCid)
+        public NCCstart(int listenerPort, string[] clientId, int NCCid, int neighbourNCCport)
         {
             ncc = new NCC();
             this.listenerPort = listenerPort;
             this.NCCid = NCCid;
+            this.clientId = clientId;
+            this.neighbourNCCport = neighbourNCCport;
+            this.ipAddress = "10.78.16.243";
 
             inputSocket = new UdpClient(listenerPort);
             listenerOn = true;
+
             Thread receiver = new Thread(getData);
             receiver.Start();
+
+            //TEST
+           // test();
+            
+        }
+
+        private void test()
+        {
+            SignalMessage sigm = new SignalMessage();
+            sigm.srcUsername = "Abacki";
+            sigm.destUsername = "Abacki";
+            ncc.ConnectionRequestOut(sigm);
         }
 
         private void getData()
@@ -40,41 +61,84 @@ namespace NetworkCallController
                 IPEndPoint remoteIpEndPoint = new IPEndPoint(IPAddress.Any, 0);
                 
                 byte[] receivedBytes = inputSocket.Receive(ref remoteIpEndPoint);
-                
                 string data = Encoding.ASCII.GetString(receivedBytes);
-                Message message = JsonConvert.DeserializeObject<Message>(data);
+
+                SignalMessage message = JsonConvert.DeserializeObject<SignalMessage>(data);
+                Console.WriteLine(message);
                 CallParameters callParameters = new CallParameters();
                 
-                switch (message.type)
+                
+                switch (message.msgType)
                 {
-                    case Message.messageType.callAccept:
+                    case messageType.callAccept:
 
                         if (message.callAccept)
                         {
-
+                            if (ncc.compareDomains(message.srcUsername))
+                            {
+                                ncc.ConnectionRequestOut(message);
+                            }
+                            else
+                            {                            
+                                ncc.CallConfirmed(message);
+                            }
+                            
+                        }
+                        else
+                        {
+                            message.msgType = messageType.callAccept;
+                            message.sourceType = componentType.NCC;
+                            message.callAccept = false;
+                            
+                            ncc.CallRequestAccept(message);
                         }
 
                         break;
-                    case Message.messageType.callRequest:
+                    case messageType.callRequest:
 
-                        if(ncc.CallRequestAccept(message))
-                            Console.WriteLine("wysłano prosbe o polaczenie do NCC");
+
+                        if (ncc.CallRequestAccept(message))
+                            Console.WriteLine("wyslano do klienta");
                         else
                         {
-                            message.type = Message.messageType.callAccept;
-                            message.callAccept = false;
-                            sendSigPackage(message);
+                            Console.WriteLine("Odmowino wykonania takiego polaczenia");                          
                         }
                        
                         break;
-                    case Message.messageType.callTeardown:
+                    case messageType.callTeardown:
+
+                        ncc.CallReleaseOut(message);
 
                         break;
 
-                    case Message.messageType.callCoordination:
+                    case messageType.callCoordination:
+                        
+                        ncc.NetworkCallCoordinationIn(message);
 
-                        message.type = Message.messageType.callAccept;
-                        sendSigPackage(message);
+                        break;
+
+                    case messageType.connectionConfirmation:
+
+                        if (message.connect)
+                        {
+                            ncc.CallConfirmed(message);
+
+                        }
+                        else
+                        {                          
+                            ncc.CallReleaseOut(message);
+                        }
+                        break;
+
+                    case messageType.callConfirmation:
+
+                        ncc.ConnectionRequestOut(message);
+
+                        break;
+
+                    case messageType.callRelease:
+
+                        ncc.CallReleaseIn(message);
 
                         break;
                     default:
@@ -85,11 +149,11 @@ namespace NetworkCallController
         }
 
 
-        private void sendSigPackage(Message sp)
+        private void sendSigPackage(SignalMessage sp)
         {
             try
             {
-                IPEndPoint pointToSend = new IPEndPoint(IPAddress.Parse("127.0.0.1"), outPort); //TODO trzeba ustalic porty z batcha
+                IPEndPoint pointToSend = new IPEndPoint(IPAddress.Parse(ipAddress), outPort); //TODO trzeba ustalic porty z batcha
                 String toSend = JsonConvert.SerializeObject(sp);
                 byte[] send_buffer = Encoding.ASCII.GetBytes(toSend);
 
